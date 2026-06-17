@@ -3,7 +3,10 @@ const courseData = window.SSU_COURSES ?? [];
 
 function syncViewportHeight() {
   const height = window.visualViewport?.height ?? window.innerHeight;
+  const viewportGap = Math.max(0, window.innerHeight - height);
   root.style.setProperty("--app-height", `${height}px`);
+  root.style.setProperty("--keyboard-offset", `${viewportGap}px`);
+  root.dataset.keyboardOpen = viewportGap > 140 ? "true" : "false";
 }
 
 syncViewportHeight();
@@ -504,11 +507,22 @@ function setCartOpen(isOpen) {
   cartButton.setAttribute("aria-expanded", String(isOpen));
 }
 
-function showToast() {
+function showToast(message = "추가되었습니다!", icon = "✓") {
   const toast = document.querySelector(".app-toast");
 
   if (!toast) {
     return;
+  }
+
+  const toastIcon = toast.querySelector("span");
+  const toastText = toast.querySelector("strong");
+
+  if (toastIcon) {
+    toastIcon.textContent = icon;
+  }
+
+  if (toastText) {
+    toastText.textContent = message;
   }
 
   window.clearTimeout(toastTimer);
@@ -766,12 +780,30 @@ function bindCourseSearch() {
   renderSuggestions([], "");
   updateCart();
 
+  input.addEventListener("focus", () => {
+    syncViewportHeight();
+    window.setTimeout(() => {
+      document.querySelector(".course-search-area")?.scrollIntoView({
+        block: "start",
+        behavior: "smooth",
+      });
+    }, 140);
+  });
+
+  input.addEventListener("blur", () => {
+    window.setTimeout(syncViewportHeight, 120);
+  });
+
   input.addEventListener("input", (event) => {
     window.clearTimeout(searchTimer);
     const keyword = event.target.value;
 
     searchTimer = window.setTimeout(() => {
       renderSuggestions(getCourseMatches(keyword), keyword);
+      document.querySelector(".course-search-area")?.scrollIntoView({
+        block: "start",
+        behavior: "smooth",
+      });
     }, 100);
   });
 
@@ -794,7 +826,7 @@ function bindCourseSearch() {
       selectedCourses.delete(key);
     } else {
       selectedCourses.set(key, course);
-      showToast();
+      showToast("추가되었습니다!", "✓");
     }
 
     renderSuggestions(getCourseMatches(input.value), input.value);
@@ -1188,6 +1220,7 @@ function renderResultPlans(data) {
   const tabs = document.querySelector(".result-tabs");
   const plans = document.querySelector(".result-plans");
   const explainButton = document.querySelector(".result-explain-button");
+  const saveButton = document.querySelector(".result-save-button");
 
   if (!tabs || !plans) {
     return;
@@ -1196,6 +1229,9 @@ function renderResultPlans(data) {
   if (recommendationError) {
     if (explainButton) {
       explainButton.disabled = true;
+    }
+    if (saveButton) {
+      saveButton.disabled = true;
     }
     tabs.innerHTML = "";
     plans.innerHTML = `
@@ -1211,6 +1247,9 @@ function renderResultPlans(data) {
     if (explainButton) {
       explainButton.disabled = true;
     }
+    if (saveButton) {
+      saveButton.disabled = true;
+    }
     tabs.innerHTML = "";
     plans.innerHTML = `
       <div class="result-empty">
@@ -1223,6 +1262,9 @@ function renderResultPlans(data) {
 
   if (explainButton) {
     explainButton.disabled = false;
+  }
+  if (saveButton) {
+    saveButton.disabled = false;
   }
 
   const planSlots = ["A", "B", "C"];
@@ -1307,6 +1349,201 @@ function getCurrentPlan() {
   }
 
   return recommendationResult?.plans?.find((plan) => plan.label.toLowerCase() === label) ?? null;
+}
+
+function getCurrentPlanLabel(plan) {
+  return String(plan?.label || "A").toUpperCase();
+}
+
+function saveCurrentPlan() {
+  const plan = getCurrentPlan();
+
+  if (!plan) {
+    return;
+  }
+
+  const label = getCurrentPlanLabel(plan);
+  const canvas = drawPlanToCanvas(plan);
+  const url = canvas.toDataURL("image/png");
+  const link = document.createElement("a");
+
+  link.href = url;
+  link.download = `SSU-TIME_${label}안_시간표.png`;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  showToast(`${label}안 시간표를 저장했어요.`, "✅");
+}
+
+function drawRoundRect(ctx, x, y, width, height, radius) {
+  const r = Math.min(radius, width / 2, height / 2);
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + width, y, x + width, y + height, r);
+  ctx.arcTo(x + width, y + height, x, y + height, r);
+  ctx.arcTo(x, y + height, x, y, r);
+  ctx.arcTo(x, y, x + width, y, r);
+  ctx.closePath();
+}
+
+function wrapCanvasText(ctx, text, x, y, maxWidth, lineHeight, maxLines = 2) {
+  const words = String(text || "").split(/\s+/);
+  const lines = [];
+  let current = "";
+
+  words.forEach((word) => {
+    const trial = current ? `${current} ${word}` : word;
+    if (ctx.measureText(trial).width <= maxWidth) {
+      current = trial;
+      return;
+    }
+    if (current) {
+      lines.push(current);
+    }
+    current = word;
+  });
+
+  if (current) {
+    lines.push(current);
+  }
+
+  lines.slice(0, maxLines).forEach((line, index) => {
+    const display = index === maxLines - 1 && lines.length > maxLines ? `${line.slice(0, Math.max(1, line.length - 1))}…` : line;
+    ctx.fillText(display, x, y + index * lineHeight);
+  });
+}
+
+function drawPlanToCanvas(plan) {
+  const scale = 2;
+  const width = 900;
+  const height = 1280;
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
+  const label = getCurrentPlanLabel(plan);
+  const score = plan.score ?? {};
+  const colors = ["#b9e7fb", "#cbd8ff", "#bfe9e5", "#ffd0c9", "#ffe4a8", "#d8ccff", "#c8efd5"];
+  const days = ["월", "화", "수", "목", "금"];
+  const startHour = 9;
+  const endHour = 20;
+  const slotHeight = 72;
+  const left = 80;
+  const top = 230;
+  const headerHeight = 48;
+  const dayWidth = (width - left - 44) / 5;
+  const gridHeight = headerHeight + (endHour - startHour) * slotHeight;
+
+  canvas.width = width * scale;
+  canvas.height = height * scale;
+  canvas.style.width = `${width}px`;
+  canvas.style.height = `${height}px`;
+  ctx.scale(scale, scale);
+
+  ctx.fillStyle = "#ddf5ff";
+  ctx.fillRect(0, 0, width, height);
+  ctx.strokeStyle = "rgba(41, 174, 232, 0.12)";
+  ctx.lineWidth = 1;
+  for (let x = 0; x <= width; x += 44) {
+    ctx.beginPath();
+    ctx.moveTo(x, 0);
+    ctx.lineTo(x, height);
+    ctx.stroke();
+  }
+  for (let y = 0; y <= height; y += 44) {
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(width, y);
+    ctx.stroke();
+  }
+
+  ctx.fillStyle = "#17324d";
+  ctx.font = "900 54px Pretendard, Malgun Gothic, sans-serif";
+  ctx.fillText(`SSU-TIME ${label}안`, 54, 82);
+  ctx.font = "800 27px Pretendard, Malgun Gothic, sans-serif";
+  ctx.fillStyle = "rgba(37, 56, 75, 0.72)";
+  ctx.fillText(`${plan.credits}학점 · 적합도 ${scorePercent(score.total)}점`, 56, 124);
+
+  ctx.fillStyle = "#ffffff";
+  drawRoundRect(ctx, 54, 154, width - 108, 58, 28);
+  ctx.fill();
+  ctx.fillStyle = "#29aee8";
+  ctx.font = "900 22px Pretendard, Malgun Gothic, sans-serif";
+  ctx.fillText(getPlanTitle(plan.type), 78, 191);
+  ctx.fillStyle = "rgba(37, 56, 75, 0.72)";
+  ctx.font = "800 20px Pretendard, Malgun Gothic, sans-serif";
+  ctx.fillText(getPlanDescription(plan), 230, 191);
+
+  ctx.fillStyle = "rgba(255,255,255,0.82)";
+  drawRoundRect(ctx, 44, top - 12, width - 88, gridHeight + 34, 28);
+  ctx.fill();
+
+  ctx.fillStyle = "#29aee8";
+  ctx.font = "900 20px Pretendard, Malgun Gothic, sans-serif";
+  days.forEach((day, index) => {
+    ctx.fillText(day, left + index * dayWidth + dayWidth / 2 - 9, top + 30);
+  });
+
+  ctx.strokeStyle = "rgba(41, 174, 232, 0.16)";
+  ctx.lineWidth = 1;
+  for (let i = 0; i <= endHour - startHour; i += 1) {
+    const y = top + headerHeight + i * slotHeight;
+    ctx.beginPath();
+    ctx.moveTo(left, y);
+    ctx.lineTo(width - 44, y);
+    ctx.stroke();
+    if (i < endHour - startHour) {
+      ctx.fillStyle = "rgba(37, 56, 75, 0.55)";
+      ctx.font = "800 16px Pretendard, Malgun Gothic, sans-serif";
+      ctx.fillText(String(startHour + i).padStart(2, "0"), 36, y + 8);
+    }
+  }
+
+  for (let i = 0; i <= 5; i += 1) {
+    const x = left + i * dayWidth;
+    ctx.beginPath();
+    ctx.moveTo(x, top + headerHeight);
+    ctx.lineTo(x, top + gridHeight);
+    ctx.stroke();
+  }
+
+  (plan.courses ?? []).forEach((course, courseIndex) => {
+    (course.meetings ?? []).forEach((meeting) => {
+      const dayIndex = days.indexOf(meeting.day);
+      if (dayIndex < 0) {
+        return;
+      }
+      const start = meeting.start / 60;
+      const end = meeting.end / 60;
+      const x = left + dayIndex * dayWidth + 6;
+      const y = top + headerHeight + (start - startHour) * slotHeight + 4;
+      const blockWidth = dayWidth - 12;
+      const blockHeight = Math.max(36, (end - start) * slotHeight - 8);
+
+      ctx.fillStyle = colors[courseIndex % colors.length];
+      drawRoundRect(ctx, x, y, blockWidth, blockHeight, 13);
+      ctx.fill();
+      ctx.strokeStyle = "rgba(17, 24, 39, 0.08)";
+      ctx.stroke();
+
+      ctx.fillStyle = "#111827";
+      ctx.textAlign = "center";
+      ctx.font = "900 17px Pretendard, Malgun Gothic, sans-serif";
+      wrapCanvasText(ctx, course.courseName, x + blockWidth / 2, y + 23, blockWidth - 12, 19, 2);
+      ctx.font = "800 14px Pretendard, Malgun Gothic, sans-serif";
+      ctx.fillText(course.professor || "", x + blockWidth / 2, y + blockHeight - 30);
+      ctx.font = "700 12px Pretendard, Malgun Gothic, sans-serif";
+      ctx.fillText(`${meeting.startText}-${meeting.endText}`, x + blockWidth / 2, y + blockHeight - 12);
+      ctx.textAlign = "left";
+    });
+  });
+
+  ctx.fillStyle = "rgba(255,255,255,0.9)";
+  drawRoundRect(ctx, 54, height - 96, width - 108, 50, 25);
+  ctx.fill();
+  ctx.fillStyle = "#17324d";
+  ctx.font = "900 22px Pretendard, Malgun Gothic, sans-serif";
+  ctx.fillText("SSU-TIME으로 만든 시간표", 78, height - 64);
+
+  return canvas;
 }
 
 function renderScoreBars(plan) {
@@ -1504,6 +1741,10 @@ function bindResultTabs() {
 function bindExplanationUI() {
   document.querySelector(".result-explain-button")?.addEventListener("click", () => {
     openExplainSheet();
+  });
+
+  document.querySelector(".result-save-button")?.addEventListener("click", () => {
+    saveCurrentPlan();
   });
 
   document.addEventListener("click", (event) => {

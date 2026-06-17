@@ -7,7 +7,7 @@
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
     />
     <title>SSU-TIME</title>
-    <link rel="stylesheet" href="./styles.css?v=33" />
+    <link rel="stylesheet" href="./styles.css?v=34" />
   </head>
   <body>
     <main class="page-shell">
@@ -618,9 +618,14 @@
           </article>
         </div>
 
-        <button class="result-explain-button" type="button" disabled>
-          이 시간표가 만들어진 이유
-        </button>
+        <div class="result-actions">
+          <button class="result-explain-button" type="button" disabled>
+            이 시간표가 만들어진 이유
+          </button>
+          <button class="result-save-button" type="button" disabled aria-label="선택한 시간표 저장하기">
+            💾
+          </button>
+        </div>
       </section>
 
       <div class="explain-backdrop" data-explain-close></div>
@@ -644,10 +649,10 @@
 
       <div class="app-toast" role="status" aria-live="polite">
         <span aria-hidden="true">✓</span>
-        추가되었습니다!
+        <strong>추가되었습니다!</strong>
       </div>
     </main>
     <script src="./course-data.js?v=1"></script>
-    <script src="./script.js?v=48"></script>
+    <script src="./script.js?v=49"></script>
   </body>
 </html>
