@@ -11,11 +11,14 @@ const STAGE_TIMING = {
 
 const timers = new Set();
 let searchTimer = null;
+let loadingTimer = null;
+let loadingImageTimer = null;
 const selectedCourses = new Map();
 const userPreferences = {
   evaluation: "",
   timePreference: "",
   dayOffPreference: "",
+  targetCredits: "",
   liberalKeywords: [],
 };
 
@@ -35,6 +38,8 @@ function setView() {
   const viewByHash = {
     "#course": "course",
     "#needs": "needs",
+    "#loading": "loading",
+    "#result": "result",
   };
 
   root.dataset.view = viewByHash[window.location.hash] ?? "start";
@@ -47,6 +52,12 @@ function setView() {
 
   if (root.dataset.view === "needs") {
     updateNeedsSummary();
+  }
+
+  if (root.dataset.view === "loading") {
+    startLoadingSequence();
+  } else {
+    stopLoadingSequence();
   }
 }
 
@@ -123,7 +134,7 @@ function getCourseMatches(keyword) {
       continue;
     }
 
-    const key = `${course.course_name}-${course.credits}-${course.completion_type}`;
+    const key = getCourseKey(course);
 
     if (!uniqueCourses.has(key)) {
       uniqueCourses.set(key, course);
@@ -155,12 +166,11 @@ function renderSuggestions(matches, keyword = "") {
   }
 
   suggestions.innerHTML = matches
-    .map(
-      (course) => {
-        const key = getCourseKey(course);
-        const isSelected = selectedCourses.has(key);
+    .map((course) => {
+      const key = getCourseKey(course);
+      const isSelected = selectedCourses.has(key);
 
-        return `
+      return `
         <button
           class="suggestion-row${isSelected ? " is-selected" : ""}"
           type="button"
@@ -173,8 +183,7 @@ function renderSuggestions(matches, keyword = "") {
           <span class="suggestion-action" aria-hidden="true">${isSelected ? "✓" : "+"}</span>
         </button>
       `;
-      },
-    )
+    })
     .join("");
 }
 
@@ -203,7 +212,9 @@ function updateCart() {
   }
 
   if (cartSummary) {
-    cartSummary.textContent = `${count}개 · ${credits}학점`;
+    cartSummary.textContent = count
+      ? `${count}과목을 담았어요 (${credits}학점)`
+      : "아직 담은 과목이 없어요";
   }
 
   if (nextButton) {
@@ -245,14 +256,14 @@ function updateNeedsSummary() {
 }
 
 function getAnsweredPreferenceCount() {
-  return ["evaluation", "timePreference", "dayOffPreference"].filter((key) => userPreferences[key]).length;
+  return ["evaluation", "timePreference", "dayOffPreference", "targetCredits"].filter((key) => userPreferences[key]).length;
 }
 
 function updateNeedsSubmitState() {
   const submitButton = document.querySelector(".needs-submit-button");
 
   if (submitButton) {
-    submitButton.disabled = getAnsweredPreferenceCount() < 3;
+    submitButton.disabled = getAnsweredPreferenceCount() < 4;
   }
 }
 
@@ -269,7 +280,13 @@ function updateKeywordPreview() {
   }
 
   preview.innerHTML = userPreferences.liberalKeywords
-    .map((keyword) => `<span>${escapeHTML(keyword)}</span>`)
+    .map(
+      (keyword) => `
+        <button class="keyword-chip" type="button" data-keyword="${escapeHTML(keyword)}">
+          ${escapeHTML(keyword)}
+        </button>
+      `,
+    )
     .join("");
 }
 
@@ -357,6 +374,8 @@ function bindCourseSearch() {
 function bindNeedsForm() {
   const form = document.querySelector(".needs-form");
   const keywordInput = document.querySelector(".keyword-input");
+  const targetCreditInput = document.querySelector(".target-credit-input");
+  const submitButton = document.querySelector(".needs-submit-button");
 
   if (!form) {
     return;
@@ -378,21 +397,170 @@ function bindNeedsForm() {
         button.classList.toggle("is-selected", button === option);
       });
 
+    if (preference === "targetCredits" && targetCreditInput) {
+      targetCreditInput.value = "";
+    }
+
     updateNeedsSubmitState();
   });
 
-  keywordInput?.addEventListener("input", (event) => {
-    userPreferences.liberalKeywords = event.target.value
-      .split(/[,，\s]+/)
-      .map((keyword) => keyword.trim())
-      .filter(Boolean)
-      .slice(0, 5);
+  targetCreditInput?.addEventListener("input", (event) => {
+    const value = Number(event.target.value);
+    userPreferences.targetCredits = Number.isFinite(value) && value > 0 && value <= 24
+      ? String(value)
+      : "";
 
+    form
+      .querySelectorAll('[data-preference="targetCredits"]')
+      .forEach((button) => {
+        button.classList.remove("is-selected");
+      });
+
+    updateNeedsSubmitState();
+  });
+
+  keywordInput?.addEventListener("keydown", (event) => {
+    if (event.key !== "Enter") {
+      return;
+    }
+
+    event.preventDefault();
+    const keyword = event.target.value.trim();
+
+    if (!keyword || userPreferences.liberalKeywords.includes(keyword)) {
+      event.target.value = "";
+      return;
+    }
+
+    userPreferences.liberalKeywords = [...userPreferences.liberalKeywords, keyword].slice(0, 5);
+    event.target.value = "";
     updateKeywordPreview();
+  });
+
+  document.querySelector(".keyword-preview")?.addEventListener("click", (event) => {
+    const chip = event.target.closest(".keyword-chip");
+
+    if (!chip) {
+      return;
+    }
+
+    userPreferences.liberalKeywords = userPreferences.liberalKeywords.filter(
+      (keyword) => keyword !== chip.dataset.keyword,
+    );
+    updateKeywordPreview();
+  });
+
+  submitButton?.addEventListener("click", () => {
+    if (submitButton.disabled) {
+      return;
+    }
+
+    window.location.hash = "#loading";
   });
 
   updateNeedsSummary();
   updateNeedsSubmitState();
+}
+
+function bindResultTabs() {
+  const tabs = document.querySelectorAll("[data-result-tab]");
+  const plans = document.querySelectorAll("[data-result-plan]");
+
+  tabs.forEach((tab) => {
+    tab.addEventListener("click", () => {
+      const target = tab.dataset.resultTab;
+
+      tabs.forEach((item) => {
+        const isActive = item === tab;
+        item.classList.toggle("is-active", isActive);
+        item.setAttribute("aria-selected", String(isActive));
+      });
+
+      plans.forEach((plan) => {
+        plan.classList.toggle("is-active", plan.dataset.resultPlan === target);
+      });
+    });
+  });
+}
+
+function stopLoadingSequence() {
+  if (loadingTimer) {
+    window.clearInterval(loadingTimer);
+    loadingTimer = null;
+  }
+
+  if (loadingImageTimer) {
+    window.clearInterval(loadingImageTimer);
+    loadingImageTimer = null;
+  }
+
+  root.dataset.loadingComplete = "false";
+}
+
+function setLoadingStep(step) {
+  root.dataset.loadingStep = String(step);
+  document.querySelectorAll("[data-loading-step]").forEach((item) => {
+    const itemStep = Number(item.dataset.loadingStep);
+    item.classList.toggle("is-done", itemStep < step);
+    item.classList.toggle("is-active", itemStep === step);
+  });
+}
+
+function setLoadingCopy(isComplete) {
+  const title = document.querySelector("#loading-title");
+  const description = document.querySelector(".loading-copy p:last-child");
+
+  if (title) {
+    title.textContent = isComplete
+      ? "시간표가 준비되었어요"
+      : "시간표를 맞춰보는 중이에요";
+  }
+
+  if (description) {
+    description.textContent = isComplete
+      ? "마음에 드는 시간표를 확인해보세요"
+      : "강의평과 취향을 함께 펼쳐보고 있어요";
+  }
+}
+
+function setLoadingImage(imageIndex) {
+  root.dataset.loadingImage = String(imageIndex);
+}
+
+function startLoadingSequence() {
+  stopLoadingSequence();
+  let step = 0;
+  let imageIndex = 0;
+  const maxStep = 4;
+  const maxImageIndex = 3;
+
+  setLoadingStep(step);
+  setLoadingImage(imageIndex);
+  root.dataset.loadingComplete = "false";
+  setLoadingCopy(false);
+
+  loadingTimer = window.setInterval(() => {
+    if (step >= maxStep) {
+      window.clearInterval(loadingTimer);
+      loadingTimer = null;
+      setLoadingStep(maxStep + 1);
+      root.dataset.loadingComplete = "true";
+      setLoadingCopy(true);
+      if (loadingImageTimer) {
+        window.clearInterval(loadingImageTimer);
+        loadingImageTimer = null;
+      }
+      return;
+    }
+
+    step += 1;
+    setLoadingStep(step);
+  }, 1350);
+
+  loadingImageTimer = window.setInterval(() => {
+    imageIndex = imageIndex >= maxImageIndex ? 0 : imageIndex + 1;
+    setLoadingImage(imageIndex);
+  }, 2500);
 }
 
 root.dataset.stage = "idle";
@@ -400,6 +568,7 @@ root.dataset.demoReady = "false";
 setView();
 bindCourseSearch();
 bindNeedsForm();
+bindResultTabs();
 lockGestures();
 
 window.addEventListener("hashchange", setView);
