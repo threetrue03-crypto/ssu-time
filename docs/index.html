@@ -1,0 +1,653 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <title>SSU-TIME</title>
+    <link rel="stylesheet" href="./styles.css?v=33" />
+  </head>
+  <body>
+    <main class="page-shell">
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="mascot-stage" aria-hidden="true">
+          <div class="bubble bubble-one"></div>
+          <div class="bubble bubble-two"></div>
+          <div class="paper paper-one"></div>
+          <div class="paper paper-two"></div>
+          <img
+            class="mascot"
+            src="./assets/shungshungi.png"
+            alt=""
+            draggable="false"
+          />
+          <div class="shadow"></div>
+        </div>
+
+        <div class="hero-copy">
+          <h1 id="hero-title">SSU-TIME</h1>
+          <div class="message">
+            <p class="message-line problem-line line-one">
+              시간표 짜는 게 힘들었나요?
+            </p>
+            <p class="message-line problem-line line-two">
+              강의평을 일일이 찾아보셨나요?
+            </p>
+            <p class="message-final">
+              SSU-TIME을 이용하세요!
+            </p>
+          </div>
+
+          <div class="flow-preview" aria-label="시간표 생성 흐름">
+            <div class="flow-step" data-flow-step="course">
+              <span class="step-number">1</span>
+              <span>과목 선택</span>
+            </div>
+            <div class="flow-step" data-flow-step="needs">
+              <span class="step-number">2</span>
+              <span>니즈 입력</span>
+            </div>
+            <div class="flow-step" data-flow-step="result">
+              <span class="step-number">3</span>
+              <span>시안 받기</span>
+            </div>
+          </div>
+
+          <div class="demo-panel" aria-label="SSU-TIME 사용 예시">
+            <div class="demo-scene demo-course" data-demo-scene="course">
+              <div class="demo-search">
+                <span class="search-icon"></span>
+                <span class="typed-text" aria-label="검색어">고급AI수학</span>
+                <span class="typing-cursor"></span>
+              </div>
+              <button class="course-result" type="button">
+                <span class="course-name">고급AI수학</span>
+              </button>
+              <span class="tap-dot"></span>
+            </div>
+
+            <div class="demo-scene demo-needs" data-demo-scene="needs">
+              <div class="question-card is-first">
+                <p>팀플 및 과제를 선호하시나요? 시험을 선호하시나요?</p>
+                <button type="button">팀플 및 과제를 선호한다.</button>
+                <button class="is-selected" type="button">시험을 선호한다.</button>
+                <button type="button">잘 모르겠다.</button>
+              </div>
+              <div class="question-card is-second">
+                <p>아침형 수업을 좋아하시나요? 저녁형 수업을 좋아하시나요?</p>
+                <button class="is-selected" type="button">아침형이 좋다.</button>
+                <button type="button">저녁형이 좋다.</button>
+                <button type="button">잘 모르겠다.</button>
+              </div>
+              <div class="question-card is-third">
+                <p>시간표를 특정 요일에 몰아 공강을 만드는 것을 선호하시나요?</p>
+                <button class="is-selected" type="button">그렇다.</button>
+                <button type="button">아니다.</button>
+                <button type="button">잘 모르겠다.</button>
+              </div>
+            </div>
+
+            <div class="demo-scene demo-result" data-demo-scene="result">
+              <div class="plan-switcher" aria-label="추천 시안 목록">
+                <span>A</span>
+                <span class="is-active">B</span>
+                <span>C</span>
+              </div>
+              <div class="mini-timetable" aria-label="추천 시간표 예시">
+                <div class="time-head"></div>
+                <div class="day-head">월</div>
+                <div class="day-head">화</div>
+                <div class="day-head">수</div>
+                <div class="day-head">목</div>
+                <div class="day-head">금</div>
+
+                <div class="time-label time-09">09</div>
+                <div class="time-label time-10">10</div>
+                <div class="time-label time-11">11</div>
+                <div class="time-label time-12">12</div>
+                <div class="time-label time-13">13</div>
+                <div class="time-label time-14">14</div>
+                <div class="time-label time-15">15</div>
+                <div class="time-label time-16">16</div>
+                <div class="time-label time-17">17</div>
+                <div class="time-label time-18">18</div>
+                <div class="time-label time-19">19</div>
+                <div class="time-label time-20">20</div>
+
+                <div class="course-block plan-a-item a-math">고급AI수학</div>
+                <div class="course-block plan-a-item a-ml">머신러닝</div>
+                <div class="course-block plan-a-item a-culture">영화와 사회</div>
+                <div class="course-block plan-a-item a-writing">창의글쓰기</div>
+
+                <div class="course-block plan-b-item b-math">고급AI수학</div>
+                <div class="course-block plan-b-item b-ml">머신러닝</div>
+                <div class="course-block plan-b-item b-ds">자료구조</div>
+                <div class="course-block plan-b-item b-culture">영화와 사회</div>
+                <div class="course-block plan-b-item b-writing">창의글쓰기</div>
+
+                <div class="course-block plan-c-item c-math">고급AI수학</div>
+                <div class="course-block plan-c-item c-ds">자료구조</div>
+                <div class="course-block plan-c-item c-culture">영화와 사회</div>
+                <div class="course-block plan-c-item c-startup">창업과 경영</div>
+              </div>
+            </div>
+          </div>
+
+          <a class="start-button" href="#course" role="button">시작하기</a>
+        </div>
+      </section>
+
+      <section class="course-page" aria-labelledby="course-title">
+        <header class="course-hero">
+          <div class="course-copy">
+            <h2 id="course-title">과목 선택</h2>
+            <p>듣고 싶은 전공 과목을 먼저 골라주세요.</p>
+          </div>
+          <img
+            class="camera-mascot"
+            src="./assets/shungshungi-camera.png"
+            alt=""
+            draggable="false"
+          />
+        </header>
+
+        <div class="course-search-area">
+          <label class="search-label" for="course-search">과목명 검색</label>
+          <div class="course-search-box">
+            <span class="course-search-icon"></span>
+            <input
+              id="course-search"
+              class="course-search-input"
+              type="search"
+              inputmode="search"
+              autocomplete="off"
+              placeholder="과목명으로 검색"
+            />
+          </div>
+          <div class="course-suggestions" aria-live="polite"></div>
+        </div>
+
+        <button
+          class="course-cart-fab"
+          type="button"
+          aria-label="선택한 과목 보기"
+          aria-expanded="false"
+        >
+          <span class="cart-icon" aria-hidden="true"></span>
+          <span class="cart-count" aria-label="선택한 과목 수">0</span>
+        </button>
+
+        <button class="cart-backdrop" type="button" aria-label="선택한 과목 닫기"></button>
+
+        <aside class="cart-sheet" aria-label="선택한 과목">
+          <span class="cart-handle" aria-hidden="true"></span>
+          <header class="cart-sheet-header">
+            <div>
+              <strong class="cart-title">선택한 과목</strong>
+              <p class="cart-summary">아직 담은 과목이 없어요</p>
+            </div>
+          </header>
+          <div class="cart-list"></div>
+          <button class="cart-next-button" type="button" disabled>다음</button>
+        </aside>
+      </section>
+
+      <section class="needs-page" aria-labelledby="needs-title">
+        <header class="needs-hero">
+          <div class="needs-copy">
+            <h2 id="needs-title">니즈 입력</h2>
+            <p>기본 정보를 입력해요.</p>
+          </div>
+          <img
+            class="needs-mascot"
+            src="./assets/shungshungi-needs.png"
+            alt=""
+            draggable="false"
+          />
+        </header>
+
+        <div class="needs-form basic-needs-form">
+          <section class="need-card">
+            <h3>시간대</h3>
+            <p>선호하는 수업 시간대가 있나요?</p>
+            <div class="need-options">
+              <button type="button" data-preference="timePreference" data-value="morning">
+                아침형
+              </button>
+              <button type="button" data-preference="timePreference" data-value="evening">
+                저녁형
+              </button>
+              <button type="button" data-preference="timePreference" data-value="unknown">
+                잘 모르겠어요
+              </button>
+            </div>
+          </section>
+
+          <section class="need-card">
+            <h3>공강</h3>
+            <p>특정 요일에 몰아서 공강을 만들까요?</p>
+            <div class="need-options">
+              <button type="button" data-preference="dayOffPreference" data-value="compact">
+                공강 만들기
+              </button>
+              <button type="button" data-preference="dayOffPreference" data-value="spread">
+                골고루 분산
+              </button>
+              <button type="button" data-preference="dayOffPreference" data-value="unknown">
+                잘 모르겠어요
+              </button>
+            </div>
+          </section>
+
+          <section class="need-card credit-card">
+            <h3>목표 학점</h3>
+            <p>이번 학기 몇 학점 이수 예정이신가요?</p>
+            <div class="need-options credit-options">
+              <button type="button" data-preference="targetCredits" data-value="15">
+                15학점
+              </button>
+              <button type="button" data-preference="targetCredits" data-value="18">
+                18학점
+              </button>
+              <button type="button" data-preference="targetCredits" data-value="21">
+                21학점
+              </button>
+            </div>
+            <label class="target-credit-label" for="target-credit-input">
+              직접 입력
+            </label>
+            <input
+              id="target-credit-input"
+              class="target-credit-input"
+              type="number"
+              inputmode="numeric"
+              min="1"
+              max="24"
+              autocomplete="off"
+              placeholder="예: 18"
+            />
+          </section>
+        </div>
+
+        <button class="basic-next-button" type="button" disabled>
+          니즈 입력으로 가기
+        </button>
+      </section>
+
+      <section class="personal-needs-page" aria-labelledby="personal-needs-title">
+        <header class="needs-hero">
+          <div class="needs-copy">
+            <h2 id="personal-needs-title">니즈 입력</h2>
+            <p>시간표 니즈를 알려주세요.</p>
+          </div>
+          <img
+            class="needs-mascot"
+            src="./assets/shungshungi-needs.png"
+            alt=""
+            draggable="false"
+          />
+        </header>
+
+        <div class="needs-form personal-needs-form">
+          <section class="need-card">
+            <h3>과제량</h3>
+            <p>과제가 많은 수업도 괜찮으신가요?</p>
+            <div class="need-options">
+              <button type="button" data-preference="assignmentLoad" data-value="ok">
+                과제 괜찮아요
+              </button>
+              <button type="button" data-preference="assignmentLoad" data-value="low">
+                적은 게 좋아요
+              </button>
+              <button type="button" data-preference="assignmentLoad" data-value="unknown">
+                상관없어요
+              </button>
+            </div>
+          </section>
+
+          <section class="need-card">
+            <h3>팀플/발표</h3>
+            <p>팀플이나 발표가 있는 수업을 선호하시나요?</p>
+            <div class="need-options">
+              <button type="button" data-preference="teamPresentation" data-value="ok">
+                있어도 좋아요
+              </button>
+              <button type="button" data-preference="teamPresentation" data-value="avoid">
+                피하고 싶어요
+              </button>
+              <button type="button" data-preference="teamPresentation" data-value="unknown">
+                상관없어요
+              </button>
+            </div>
+          </section>
+
+          <section class="need-card">
+            <h3>시험 부담</h3>
+            <p>시험 중심 수업을 선호하시나요?</p>
+            <div class="need-options">
+              <button type="button" data-preference="examPreference" data-value="exam">
+                시험 중심 좋아요
+              </button>
+              <button type="button" data-preference="examPreference" data-value="low">
+                시험 부담 적게
+              </button>
+              <button type="button" data-preference="examPreference" data-value="unknown">
+                상관없어요
+              </button>
+            </div>
+          </section>
+
+          <section class="need-card">
+            <h3>난이도</h3>
+            <p>어려워도 얻어가는 게 많은 수업을 선호하시나요?</p>
+            <div class="need-options">
+              <button type="button" data-preference="difficultyPreference" data-value="deep">
+                깊이 있는 수업
+              </button>
+              <button type="button" data-preference="difficultyPreference" data-value="easy">
+                부담 적은 수업
+              </button>
+              <button type="button" data-preference="difficultyPreference" data-value="unknown">
+                상관없어요
+              </button>
+            </div>
+          </section>
+
+          <section class="need-card">
+            <h3>학점</h3>
+            <p>학점을 잘 받을 수 있는 수업이 중요한가요?</p>
+            <div class="need-options">
+              <button type="button" data-preference="gradePreference" data-value="generous">
+                학점 후한 수업
+              </button>
+              <button type="button" data-preference="gradePreference" data-value="content">
+                내용이 중요해요
+              </button>
+              <button type="button" data-preference="gradePreference" data-value="unknown">
+                상관없어요
+              </button>
+            </div>
+          </section>
+
+          <section class="need-card">
+            <h3>출석</h3>
+            <p>출석이나 지각 관리가 엄격한 수업도 괜찮으신가요?</p>
+            <div class="need-options">
+              <button type="button" data-preference="attendancePreference" data-value="strict">
+                엄격해도 괜찮아요
+              </button>
+              <button type="button" data-preference="attendancePreference" data-value="loose">
+                부담 적게
+              </button>
+              <button type="button" data-preference="attendancePreference" data-value="unknown">
+                상관없어요
+              </button>
+            </div>
+          </section>
+
+          <section class="need-card">
+            <h3>수업 분위기</h3>
+            <p>수업 분위기는 어떤 쪽을 선호하시나요?</p>
+            <div class="need-options">
+              <button type="button" data-preference="classMood" data-value="fun">
+                재미있고 편한 수업
+              </button>
+              <button type="button" data-preference="classMood" data-value="structured">
+                체계적인 수업
+              </button>
+              <button type="button" data-preference="classMood" data-value="unknown">
+                상관없어요
+              </button>
+            </div>
+          </section>
+
+          <section class="need-card liberal-choice-card">
+            <h3>교양을 넣을까요?</h3>
+            <p>관심 키워드에 맞는 교양 과목을 자동으로 추천할 수 있어요.</p>
+            <div class="need-options two-options">
+              <button type="button" data-preference="liberalChoice" data-value="yes">
+                네
+              </button>
+              <button type="button" data-preference="liberalChoice" data-value="no">
+                아니오
+              </button>
+            </div>
+          </section>
+
+          <section class="need-card keyword-card" data-keyword-enabled="false">
+            <label for="liberal-keywords">관심 교양 키워드</label>
+            <input
+              id="liberal-keywords"
+              class="keyword-input"
+              type="text"
+              inputmode="text"
+              autocomplete="off"
+              placeholder="예: 영화, 심리, 창업"
+              disabled
+            />
+            <p class="keyword-help">
+              교양을 넣는다고 선택하면 입력할 수 있어요.<br />
+              비워두면 랜덤 교양을 넣고, 엔터를 누르면 아래에 추가돼요.
+            </p>
+            <div class="keyword-preview" aria-live="polite"></div>
+          </section>
+        </div>
+
+        <button class="needs-submit-button" type="button" disabled>
+          추천 시간표 보러가기
+        </button>
+      </section>
+
+      <section class="loading-page" aria-labelledby="loading-title">
+        <div class="loading-card">
+          <div class="loading-mascot-stage" aria-hidden="true">
+            <img class="loading-mascot loading-note" src="./assets/loading-note.png" alt="" draggable="false" />
+            <img class="loading-mascot loading-lab" src="./assets/loading-lab.png" alt="" draggable="false" />
+            <img class="loading-mascot loading-soul" src="./assets/loading-soul.png" alt="" draggable="false" />
+            <img class="loading-mascot loading-sleep" src="./assets/loading-sleep.png" alt="" draggable="false" />
+            <img class="loading-mascot loading-complete" src="./assets/loading-complete.png" alt="" draggable="false" />
+          </div>
+
+          <div class="loading-copy">
+            <h2 id="loading-title">시간표를 맞춰보는 중이에요</h2>
+            <p>강의평과 취향을 함께 펼쳐보고 있어요</p>
+          </div>
+
+          <ol class="loading-steps" aria-label="시간표 시안 생성 단계">
+            <li data-loading-step="0"><span></span>선택한 과목 확인</li>
+            <li data-loading-step="1"><span></span>강의평 불러오기</li>
+            <li data-loading-step="2"><span></span>수업 성향 분석</li>
+            <li data-loading-step="3"><span></span>시간표 충돌 확인</li>
+            <li data-loading-step="4"><span></span>시간표 정리</li>
+          </ol>
+
+          <a class="loading-result-button" href="#result" role="button">
+            시간표 보러가기
+          </a>
+        </div>
+      </section>
+
+      <section class="result-page" aria-labelledby="result-title">
+        <header class="result-header">
+          <div class="result-copy">
+            <h2 id="result-title">시간표 시안</h2>
+            <p>마음에 드는 시간표를 골라보세요.</p>
+          </div>
+          <a class="result-restart" href="#course" aria-label="과목 선택으로 돌아가기">
+            <img src="./assets/shungshungi-restart.png" alt="" />
+            <span>다시하기</span>
+          </a>
+        </header>
+
+        <div class="result-tabs" role="tablist" aria-label="시간표 시안 선택">
+          <button class="is-active" type="button" role="tab" aria-selected="true" data-result-tab="a">
+            A안
+          </button>
+          <button type="button" role="tab" aria-selected="false" data-result-tab="b">
+            B안
+          </button>
+          <button type="button" role="tab" aria-selected="false" data-result-tab="c">
+            C안
+          </button>
+        </div>
+
+        <div class="result-plans">
+          <article class="result-plan is-active" data-result-plan="a">
+            <div class="result-plan-summary">
+              <span>균형형 추천</span>
+              <strong>전공 12학점 · 교양 6학점</strong>
+              <p>오전 수업을 적당히 넣고 금요일을 비워둔 시안이에요.</p>
+            </div>
+
+            <div class="result-timetable" aria-label="A안 시간표">
+              <div class="result-time-head"></div>
+              <div class="result-day-head">월</div>
+              <div class="result-day-head">화</div>
+              <div class="result-day-head">수</div>
+              <div class="result-day-head">목</div>
+              <div class="result-day-head">금</div>
+              <div class="result-time result-time-09">09</div>
+              <div class="result-time result-time-10">10</div>
+              <div class="result-time result-time-11">11</div>
+              <div class="result-time result-time-12">12</div>
+              <div class="result-time result-time-13">13</div>
+              <div class="result-time result-time-14">14</div>
+              <div class="result-time result-time-15">15</div>
+              <div class="result-time result-time-16">16</div>
+              <div class="result-time result-time-17">17</div>
+              <div class="result-time result-time-18">18</div>
+              <div class="result-time result-time-19">19</div>
+              <div class="result-time result-time-20">20</div>
+              <div class="result-course block-ai-math">고급AI수학</div>
+              <div class="result-course block-data">자료구조</div>
+              <div class="result-course block-ml">머신러닝</div>
+              <div class="result-course block-culture">영화와 사회</div>
+              <div class="result-course block-writing">창의글쓰기</div>
+              <div class="result-course block-startup">창업과 경영</div>
+            </div>
+
+            <div class="result-tags">
+              <span>금요일 공강</span>
+              <span>오전 적당</span>
+              <span>과제 보통</span>
+            </div>
+          </article>
+
+          <article class="result-plan" data-result-plan="b">
+            <div class="result-plan-summary">
+              <span>여유형 추천</span>
+              <strong>전공 9학점 · 교양 9학점</strong>
+              <p>하루 수업량을 낮추고 오후 시간대를 중심으로 배치했어요.</p>
+            </div>
+
+            <div class="result-timetable" aria-label="B안 시간표">
+              <div class="result-time-head"></div>
+              <div class="result-day-head">월</div>
+              <div class="result-day-head">화</div>
+              <div class="result-day-head">수</div>
+              <div class="result-day-head">목</div>
+              <div class="result-day-head">금</div>
+              <div class="result-time result-time-09">09</div>
+              <div class="result-time result-time-10">10</div>
+              <div class="result-time result-time-11">11</div>
+              <div class="result-time result-time-12">12</div>
+              <div class="result-time result-time-13">13</div>
+              <div class="result-time result-time-14">14</div>
+              <div class="result-time result-time-15">15</div>
+              <div class="result-time result-time-16">16</div>
+              <div class="result-time result-time-17">17</div>
+              <div class="result-time result-time-18">18</div>
+              <div class="result-time result-time-19">19</div>
+              <div class="result-time result-time-20">20</div>
+              <div class="result-course block-b-ai">고급AI수학</div>
+              <div class="result-course block-b-web">웹프로그래밍</div>
+              <div class="result-course block-b-stat">AI통계</div>
+              <div class="result-course block-b-psy">심리학개론</div>
+              <div class="result-course block-b-movie">영화의 이해</div>
+              <div class="result-course block-b-career">진로탐색</div>
+            </div>
+
+            <div class="result-tags">
+              <span>오후 중심</span>
+              <span>분산형</span>
+              <span>교양 넉넉</span>
+            </div>
+          </article>
+
+          <article class="result-plan" data-result-plan="c">
+            <div class="result-plan-summary">
+              <span>공강형 추천</span>
+              <strong>전공 12학점 · 교양 6학점</strong>
+              <p>화요일과 목요일에 수업을 몰아 긴 공강을 만든 시안이에요.</p>
+            </div>
+
+            <div class="result-timetable" aria-label="C안 시간표">
+              <div class="result-time-head"></div>
+              <div class="result-day-head">월</div>
+              <div class="result-day-head">화</div>
+              <div class="result-day-head">수</div>
+              <div class="result-day-head">목</div>
+              <div class="result-day-head">금</div>
+              <div class="result-time result-time-09">09</div>
+              <div class="result-time result-time-10">10</div>
+              <div class="result-time result-time-11">11</div>
+              <div class="result-time result-time-12">12</div>
+              <div class="result-time result-time-13">13</div>
+              <div class="result-time result-time-14">14</div>
+              <div class="result-time result-time-15">15</div>
+              <div class="result-time result-time-16">16</div>
+              <div class="result-time result-time-17">17</div>
+              <div class="result-time result-time-18">18</div>
+              <div class="result-time result-time-19">19</div>
+              <div class="result-time result-time-20">20</div>
+              <div class="result-course block-c-ai">고급AI수학</div>
+              <div class="result-course block-c-data">자료구조</div>
+              <div class="result-course block-c-os">운영체제</div>
+              <div class="result-course block-c-design">디자인문화창의성</div>
+              <div class="result-course block-c-human">현대사회와 윤리</div>
+              <div class="result-course block-c-speech">발표와 토론</div>
+            </div>
+
+            <div class="result-tags">
+              <span>월·금 공강</span>
+              <span>몰아듣기</span>
+              <span>저녁 없음</span>
+            </div>
+          </article>
+        </div>
+
+        <button class="result-explain-button" type="button" disabled>
+          이 시간표가 만들어진 이유
+        </button>
+      </section>
+
+      <div class="explain-backdrop" data-explain-close></div>
+      <section class="explain-sheet" aria-label="시간표 추천 이유">
+        <div class="sheet-handle" aria-hidden="true"></div>
+        <header class="explain-header">
+          <span>추천 근거</span>
+          <button type="button" data-explain-close aria-label="닫기">×</button>
+        </header>
+        <div class="explain-sheet-body"></div>
+      </section>
+
+      <div class="detail-backdrop" data-detail-close></div>
+      <section class="detail-modal" aria-label="계산 과정 자세히 보기">
+        <header class="detail-header">
+          <span>계산 과정</span>
+          <button type="button" data-detail-close aria-label="닫기">×</button>
+        </header>
+        <div class="detail-body"></div>
+      </section>
+
+      <div class="app-toast" role="status" aria-live="polite">
+        <span aria-hidden="true">✓</span>
+        추가되었습니다!
+      </div>
+    </main>
+    <script src="./course-data.js?v=1"></script>
+    <script src="./script.js?v=48"></script>
+  </body>
+</html>

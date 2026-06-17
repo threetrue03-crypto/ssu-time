@@ -1,0 +1,18 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+*.log
+
+# Local crawler/session data
+scraper/data/storage_state.json
+scraper/data/*raw*.jsonl
+scraper/data/*status*.json
+scraper/data/*.pid
+scraper/data/login_failed.png
+
+# Local preview/cache files
+outputs/ssu-time-start-screen/preview*.png
+backend/uvicorn*.log
+
