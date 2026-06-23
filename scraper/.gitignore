@@ -1,0 +1,7 @@
+.env
+data/raw_reviews.jsonl
+data/reviews.xlsx
+data/scrape_status.json
+data/storage_state.json
+__pycache__/
+.venv/

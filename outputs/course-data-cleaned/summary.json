@@ -1,0 +1,112 @@
+{
+  "raw_rows": 468,
+  "clean_rows": 401,
+  "removed_duplicate_rows": 67,
+  "by_group": {
+    "major": 92,
+    "liberal": 309
+  },
+  "by_type": {
+    "전선": 64,
+    "전필": 13,
+    "전기": 15,
+    "교선": 309
+  },
+  "by_area": {
+    "AI소프트웨어학부": 92,
+    "사회·정치·경제": 67,
+    "문화·예술": 69,
+    "인간·언어": 87,
+    "자기개발·진로탐색": 86
+  },
+  "sample": [
+    {
+      "id": "C0001",
+      "course_group": "major",
+      "source_area": "AI소프트웨어학부",
+      "completion_type": "전선",
+      "course_code": "2150156801",
+      "course_name": "Co-op클라우드트랙(AI-PaaS 기초)",
+      "professor": "최종석",
+      "credits": 6,
+      "time_raw": "화 15:00-16:15 (조만식기념관 12203-최종석)\n화 16:30-17:45 (조만식기념관 12203-최종석)\n목 15:00-16:15 (조만식기념관 12406-최종석)\n목 16:30-17:45 (조만식기념관 12406-최종석)"
+    },
+    {
+      "id": "C0002",
+      "course_group": "major",
+      "source_area": "AI소프트웨어학부",
+      "completion_type": "전선",
+      "course_code": "2150059401",
+      "course_name": "[심화]Co-op SAP 트랙",
+      "professor": "홍지만\n최종석",
+      "credits": 6,
+      "time_raw": "월 화 18:00-19:15 (전산관 19328 (첨단PC실습실)-홍지만)\n수 목 18:00-19:15 (전산관 19328 (첨단PC실습실)-최종석)"
+    },
+    {
+      "id": "C0003",
+      "course_group": "major",
+      "source_area": "AI소프트웨어학부",
+      "completion_type": "전선",
+      "course_code": "2150164005",
+      "course_name": "고급AI수학",
+      "professor": "박중석",
+      "credits": 3,
+      "time_raw": "화 09:00-10:15 (정보과학관 21301-박중석)\n화 10:30-11:45 (정보과학관 21301-박중석)"
+    },
+    {
+      "id": "C0004",
+      "course_group": "major",
+      "source_area": "AI소프트웨어학부",
+      "completion_type": "전선",
+      "course_code": "2150164108",
+      "course_name": "고급프로그래밍",
+      "professor": "권재환",
+      "credits": 3,
+      "time_raw": "화 15:00-15:50 (정보과학관 21305 (이철희실습실)-권재환)\n화 16:00-16:50 (정보과학관 21305 (이철희실습실)-권재환)\n목 15:00-15:50 (정보과학관 21305 (이철희실습실)-권재환)\n목 16:00-16:50 (정보과학관 21305 (이철희실습실)-권재환)"
+    },
+    {
+      "id": "C0005",
+      "course_group": "major",
+      "source_area": "AI소프트웨어학부",
+      "completion_type": "전선",
+      "course_code": "2150162205",
+      "course_name": "기초AI수학",
+      "professor": "박중석",
+      "credits": 3,
+      "time_raw": "화 13:30-14:45 (벤처중소기업센터 10311-박중석)\n화 15:00-16:15 (벤처중소기업센터 10311-박중석)"
+    },
+    {
+      "id": "C0006",
+      "course_group": "major",
+      "source_area": "AI소프트웨어학부",
+      "completion_type": "전필",
+      "course_code": "2150163704",
+      "course_name": "머신러닝",
+      "professor": "최형광",
+      "credits": 3,
+      "time_raw": "수 금 15:00-16:15 (정보과학관 21301-최형광)"
+    },
+    {
+      "id": "C0007",
+      "course_group": "major",
+      "source_area": "AI소프트웨어학부",
+      "completion_type": "전기",
+      "course_code": "2150162304",
+      "course_name": "이산수학",
+      "professor": "이재일",
+      "credits": 3,
+      "time_raw": "화 목 10:30-11:45 (정보과학관 21303-이재일)"
+    },
+    {
+      "id": "C0008",
+      "course_group": "major",
+      "source_area": "AI소프트웨어학부",
+      "completion_type": "전필",
+      "course_code": "2150163206",
+      "course_name": "자료구조",
+      "professor": "권재환",
+      "credits": 3,
+      "time_raw": "화 금 13:30-14:45 (정보과학관 21304-권재환)"
+    }
+  ]
+}
